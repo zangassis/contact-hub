@@ -1,52 +1,48 @@
 using Data;
-using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Services;
 
 public class ContactService
 {
-    private readonly ContactDBContext _db;
+    private readonly ContactRepository _repository;
 
-    public ContactService(ContactDBContext db)
+    public ContactService(ContactRepository repository)
     {
-        _db = db;
+        _repository = repository;
     }
 
-    public async Task<List<Contact>> FindAllContactsAsync()
+    public async Task<List<Contact>> GetAllContactsAsync()
     {
-        return await _db.Contacts.ToListAsync();
+        return await _repository.FindAllContactsAsync();
     }
 
-    public async Task<Contact> FindContactByIdAsync(Guid id)
+    public async Task<Guid> CreateContactAsync(Contact contact)
     {
-        var contact = await _db.Contacts.SingleOrDefaultAsync(c => c.Id == id);
-        return contact;
+
+
+        return await _repository.InsertAsync(contact);
     }
 
-    public async Task<Guid> InsertAsync(Contact contact)
+    public async Task UpdateContactAsync(Guid id, Contact updatedContact)
     {
-        contact.Id = Guid.NewGuid();
-        contact.CreatedOn = DateTime.Now;
 
-        await _db.AddAsync(contact);
-        await _db.SaveChangesAsync();
-        return contact.Id;
+
+        var existingContact = await _repository.FindContactByIdAsync(id);
+        if (existingContact != null)
+        {
+            await _repository.UpdateAsync(updatedContact, existingContact);
+        }
     }
 
-    public async Task UpdateAsync(Contact contact, Contact existingContact)
+    public async Task DeleteContactAsync(Guid id)
     {
-        existingContact.FullName = contact.FullName;
-        existingContact.PhoneNumber = contact.PhoneNumber;
-        existingContact.EmailAddress = contact.EmailAddress;
-        existingContact.Address = contact.Address;
-        existingContact.IsDeleted = contact.IsDeleted;
-        await _db.SaveChangesAsync();
-    }
 
-    public async Task DeleteAsync(Contact contact)
-    {
-        _db.Remove(contact);
-        await _db.SaveChangesAsync();
+
+        var existingContact = await _repository.FindContactByIdAsync(id);
+        if (existingContact != null)
+        {
+            await _repository.DeleteAsync(existingContact);
+        }
     }
 }
