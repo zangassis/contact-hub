@@ -12,22 +12,18 @@ public class ContactService
         _repository = repository;
     }
 
-    public async Task<List<Contact>> GetAllContactsAsync()
+    public async Task<List<Contact>> FindAllContactsAsync()
     {
         return await _repository.FindAllContactsAsync();
     }
 
     public async Task<Guid> CreateContactAsync(Contact contact)
     {
-
-
         return await _repository.InsertAsync(contact);
     }
 
     public async Task UpdateContactAsync(Guid id, Contact updatedContact)
     {
-
-
         var existingContact = await _repository.FindContactByIdAsync(id);
         if (existingContact != null)
         {
@@ -37,12 +33,20 @@ public class ContactService
 
     public async Task DeleteContactAsync(Guid id)
     {
-
-
         var existingContact = await _repository.FindContactByIdAsync(id);
         if (existingContact != null)
         {
             await _repository.DeleteAsync(existingContact);
         }
+    }
+
+    public string GetPersonalContactFullName(Contact contact)
+    {
+        if (contact is PersonalContact personalContact)
+        {
+            string fullName = $"{contact.FullName} {personalContact.Nickname}";
+            return fullName;
+        }
+        return contact.FullName;
     }
 }

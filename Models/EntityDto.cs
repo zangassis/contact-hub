@@ -1,6 +1,6 @@
 namespace Models;
 
-public class ContactDto
+public class EntityDto
 {
     public Guid Id { get; set; }
 };
