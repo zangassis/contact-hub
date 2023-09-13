@@ -2,7 +2,7 @@ namespace Data;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
-public class ContactRepository
+public class ContactRepository : IContactRepository
 {
     private readonly ContactDBContext _db;
 

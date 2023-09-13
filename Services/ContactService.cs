@@ -3,11 +3,11 @@ using Models;
 
 namespace Services;
 
-public class ContactService
+public class ContactService : IContactService
 {
-    private readonly ContactRepository _repository;
+    private readonly IContactRepository _repository;
 
-    public ContactService(ContactRepository repository)
+    public ContactService(IContactRepository repository)
     {
         _repository = repository;
     }
@@ -15,6 +15,12 @@ public class ContactService
     public async Task<List<Contact>> FindAllContactsAsync()
     {
         return await _repository.FindAllContactsAsync();
+    }
+
+    public async Task<Contact> FindContactByIdAsync(Guid id)
+    {
+        var contact = await _repository.FindContactByIdAsync(id);
+        return contact;
     }
 
     public async Task<Guid> CreateContactAsync(Contact contact)
@@ -25,6 +31,7 @@ public class ContactService
     public async Task UpdateContactAsync(Guid id, Contact updatedContact)
     {
         var existingContact = await _repository.FindContactByIdAsync(id);
+
         if (existingContact != null)
         {
             await _repository.UpdateAsync(updatedContact, existingContact);
